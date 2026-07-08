@@ -1,0 +1,16 @@
+warehouse_id,name,city,state,country,capacity_units,opened_date
+2f1e95b4-aa81-4b55-926d-70531f59528d,Phoenix Distribution Center,Phoenix,Arizona,US,385243,2016-04-01
+bbc4323f-7fdc-4913-8813-74f66d90fbff,Atlanta Logistics Hub,Atlanta,Georgia,US,63112,2018-01-31
+9a7f238f-ff0a-4a46-9bc5-b76c045f34f7,Dallas Fulfillment Center,Dallas,Texas,US,178393,2017-07-03
+675870cd-1868-4277-aeba-578addec8838,Chicago Midwest Warehouse,Chicago,Illinois,US,123158,2016-02-24
+414c90e8-1f79-4fac-aa23-cea655b18828,Newark East Coast Depot,Newark,New Jersey,US,404785,2021-02-11
+bf354916-9528-4db9-8189-f6524573c41b,Los Angeles Port Facility,Los Angeles,California,US,95580,2021-08-15
+186252aa-ede5-4d43-ae8c-afa67e2d2f41,Seattle Pacific Hub,Seattle,Washington,US,271208,2015-05-11
+3b5e3aa9-ba0f-4938-8883-41d61182dc94,Denver Mountain Depot,Denver,Colorado,US,65622,2016-01-19
+fa42ec50-bf62-41ae-851d-68ee160f73ae,Miami South Distribution,Miami,Florida,US,164629,2017-08-10
+90d6c40d-10d6-432b-99fe-bd1448f1aa57,Columbus Central Center,Columbus,Ohio,US,314951,2021-10-01
+bd0b4a2e-3f75-46a1-bf8a-5a82594d70a4,Memphis Cargo Hub,Memphis,Tennessee,US,63912,2021-04-17
+30a760c5-971e-45bc-a486-1b9c5c6cb5b3,Salt Lake Regional Depot,Salt Lake City,Utah,US,154248,2022-04-15
+067cb52e-60b6-4c7f-b93d-ba67d806f2e9,Toronto Fulfillment,Toronto,Ontario,Canada,417696,2021-02-10
+17c4e490-aea6-450e-8341-edd09cb436b7,London Logistics Park,London,England,UK,269949,2017-06-21
+ab993ac2-3403-4413-88ca-adf00cee0973,Munich Distribution Center,Munich,Bavaria,Germany,285514,2021-08-10
