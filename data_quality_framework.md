@@ -109,7 +109,7 @@ Create metadata and logging tables:
    - RULE_ID
    - RUN_START_TIME
    - RUN_END_TIME
-   - RULE_EXEC_REUSLT
+   - RULE_EXEC_RESULT
    - RULE_OUTPUT_VALUE
    - RUN_STATUS
    - TRIGGERED_BY
@@ -188,6 +188,7 @@ And, store the stored procedure definition and declaration in DQ_Orchestration.s
 ## Step 7: Create Streamlit Dashboard in Snowflake
 
 Create an enterprise grade Streamlit app in Snowflake workspace for the Data Quality Framework visualization for all tables for which we applied data quality rules.
+Create the file as a streamlit app inside its own .streamlit folder and with other .yml files.
 
 Dashboard name:
 DQ_MONITORING_DASHBOARD

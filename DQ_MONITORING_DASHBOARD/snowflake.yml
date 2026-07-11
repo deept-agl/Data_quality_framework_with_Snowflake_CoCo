@@ -1,0 +1,18 @@
+definition_version: 2
+entities:
+  streamlit_app:
+    type: streamlit
+    identifier:
+      database: BANKING_DQ_DB
+      schema: DQ_MONITORING
+      name: DQ_MONITORING_DASHBOARD
+    title: DQ_MONITORING_DASHBOARD
+    query_warehouse: COMPUTE_WH
+    compute_pool: SYSTEM_COMPUTE_POOL_CPU
+    run_mode: SpcsOnly
+    execute_as: OWNER
+    main_file: DQ_MONITORING_DASHBOARD.py
+    artifacts:
+      - pyproject.toml
+      - DQ_MONITORING_DASHBOARD.py
+      - .streamlit/config.toml

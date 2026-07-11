@@ -1,0 +1,132 @@
+-- Recommended data quality rules (Technical and Business) for BANKING_DQ_DB.RAW tables
+-- Co-authored with CoCo
+
+-- ============================================================================
+-- STEP 2: DATA QUALITY RULES RECOMMENDATION
+-- ============================================================================
+-- Dimensions: Completeness, Accuracy, Validity, Consistency, Timeliness,
+--             Uniqueness, Referential Integrity
+-- Priority: HIGH / MEDIUM / LOW based on business impact
+-- ============================================================================
+
+-- ============================================================================
+-- TABLE: BRANCHES
+-- ============================================================================
+-- Rule ID | Rule Name                        | Type       | Dimension       | Column(s)     | Priority | Description
+-- BR-01   | Branch ID Uniqueness             | Technical  | Uniqueness      | BRANCH_ID     | HIGH     | No duplicate branch IDs
+-- BR-02   | Branch ID Not Null               | Technical  | Completeness    | BRANCH_ID     | HIGH     | PK cannot be null
+-- BR-03   | Branch Name Not Null             | Technical  | Completeness    | BRANCH_NAME   | HIGH     | Every branch must have a name
+-- BR-04   | IFSC Code Format                 | Technical  | Validity        | IFSC_CODE     | HIGH     | Must match ^[A-Z]{4}[0-9]{7}$
+-- BR-05   | IFSC Code Uniqueness             | Technical  | Uniqueness      | IFSC_CODE     | HIGH     | Each branch has unique IFSC
+-- BR-06   | State Valid Values               | Business   | Accuracy        | STATE         | MEDIUM   | Must be a valid Indian state
+-- BR-07   | IS_ACTIVE Valid Boolean           | Technical  | Validity        | IS_ACTIVE     | LOW      | Must be TRUE/FALSE (not null)
+-- BR-08   | Row Count Stability              | Technical  | Completeness    | (table)       | MEDIUM   | Row count should not drop suddenly
+-- BR-09   | Freshness Check                  | Technical  | Timeliness      | (table)       | LOW      | Table should be refreshed regularly
+
+-- ============================================================================
+-- TABLE: CUSTOMERS
+-- ============================================================================
+-- Rule ID | Rule Name                        | Type       | Dimension       | Column(s)         | Priority | Description
+-- CU-01   | Customer ID Uniqueness           | Technical  | Uniqueness      | CUSTOMER_ID       | HIGH     | No duplicate customer IDs
+-- CU-02   | Customer ID Not Null             | Technical  | Completeness    | CUSTOMER_ID       | HIGH     | PK cannot be null
+-- CU-03   | Email Format Valid               | Technical  | Validity        | EMAIL             | HIGH     | Must contain @ and valid domain
+-- CU-04   | Email Uniqueness                 | Business   | Uniqueness      | EMAIL             | HIGH     | No duplicate emails
+-- CU-05   | Phone Format Valid (10 digits)   | Technical  | Validity        | PHONE             | HIGH     | Must be exactly 10 digits
+-- CU-06   | DOB Not in Future                | Technical  | Validity        | DATE_OF_BIRTH     | HIGH     | Birth date <= today
+-- CU-07   | DOB Age >= 18                    | Business   | Accuracy        | DATE_OF_BIRTH     | HIGH     | Customer must be 18+
+-- CU-08   | KYC Status Accepted Values       | Business   | Validity        | KYC_STATUS        | HIGH     | Only VERIFIED, PENDING, REJECTED
+-- CU-09   | Risk Category Accepted Values    | Business   | Validity        | RISK_CATEGORY     | MEDIUM   | Only LOW, MEDIUM, HIGH
+-- CU-10   | Branch ID FK Integrity           | Technical  | Ref Integrity   | BRANCH_ID         | HIGH     | Must exist in BRANCHES
+-- CU-11   | First/Last Name Not Null         | Technical  | Completeness    | FIRST_NAME,LAST_NAME | MEDIUM | Names must not be empty
+-- CU-12   | Row Count Stability              | Technical  | Completeness    | (table)           | MEDIUM   | Row count should not drop
+-- CU-13   | Freshness Check                  | Technical  | Timeliness      | (table)           | MEDIUM   | Table refreshed regularly
+
+-- ============================================================================
+-- TABLE: ACCOUNTS
+-- ============================================================================
+-- Rule ID | Rule Name                        | Type       | Dimension       | Column(s)         | Priority | Description
+-- AC-01   | Account ID Uniqueness            | Technical  | Uniqueness      | ACCOUNT_ID        | HIGH     | No duplicate account IDs
+-- AC-02   | Account ID Not Null              | Technical  | Completeness    | ACCOUNT_ID        | HIGH     | PK cannot be null
+-- AC-03   | Balance Non-Negative (Savings)   | Business   | Accuracy        | BALANCE           | HIGH     | Savings accounts balance >= 0
+-- AC-04   | Account Type Accepted Values     | Business   | Validity        | ACCOUNT_TYPE      | HIGH     | Only SAVINGS, CURRENT, LOAN
+-- AC-05   | Account Status Accepted Values   | Business   | Validity        | ACCOUNT_STATUS    | HIGH     | Only ACTIVE, DORMANT, CLOSED
+-- AC-06   | Currency Consistency             | Business   | Consistency     | CURRENCY          | MEDIUM   | Domestic accounts should be INR
+-- AC-07   | Customer ID FK Integrity         | Technical  | Ref Integrity   | CUSTOMER_ID       | HIGH     | Must exist in CUSTOMERS
+-- AC-08   | Branch ID FK Integrity           | Technical  | Ref Integrity   | BRANCH_ID         | HIGH     | Must exist in BRANCHES
+-- AC-09   | Open Date Not in Future          | Technical  | Validity        | OPEN_DATE         | MEDIUM   | Account open date <= today
+-- AC-10   | Closed Account Zero Balance      | Business   | Consistency     | BALANCE,STATUS    | MEDIUM   | CLOSED accounts should have 0 balance
+-- AC-11   | Row Count Stability              | Technical  | Completeness    | (table)           | MEDIUM   | Row count should not drop
+-- AC-12   | Freshness Check                  | Technical  | Timeliness      | (table)           | MEDIUM   | Table refreshed regularly
+
+-- ============================================================================
+-- TABLE: TRANSACTIONS
+-- ============================================================================
+-- Rule ID | Rule Name                        | Type       | Dimension       | Column(s)             | Priority | Description
+-- TX-01   | Transaction ID Uniqueness        | Technical  | Uniqueness      | TRANSACTION_ID        | HIGH     | No duplicate txn IDs
+-- TX-02   | Transaction ID Not Null          | Technical  | Completeness    | TRANSACTION_ID        | HIGH     | PK cannot be null
+-- TX-03   | Amount Positive                  | Business   | Accuracy        | AMOUNT                | HIGH     | Transaction amount must be > 0
+-- TX-04   | Transaction Type Accepted Values | Business   | Validity        | TRANSACTION_TYPE      | HIGH     | Only DEBIT, CREDIT
+-- TX-05   | Transaction Status Accepted      | Business   | Validity        | TRANSACTION_STATUS    | HIGH     | Only SUCCESS, FAILED, PENDING
+-- TX-06   | Channel Accepted Values          | Business   | Validity        | CHANNEL               | MEDIUM   | Only UPI, NEFT, IMPS, CARD, ATM, CHEQUE
+-- TX-07   | Account ID FK Integrity          | Technical  | Ref Integrity   | ACCOUNT_ID            | HIGH     | Must exist in ACCOUNTS
+-- TX-08   | Transaction Date Not Future      | Technical  | Validity        | TRANSACTION_DATE      | MEDIUM   | Txn date <= current timestamp
+-- TX-09   | Row Count Stability              | Technical  | Completeness    | (table)               | HIGH     | Row count should grow or stay stable
+-- TX-10   | Freshness Check                  | Technical  | Timeliness      | (table)               | HIGH     | High-volume table must be fresh
+-- TX-11   | Merchant Category Not Null       | Technical  | Completeness    | MERCHANT_CATEGORY     | LOW      | Should classify all transactions
+
+-- ============================================================================
+-- TABLE: LOAN_APPLICATIONS
+-- ============================================================================
+-- Rule ID | Rule Name                        | Type       | Dimension       | Column(s)             | Priority | Description
+-- LA-01   | Application ID Uniqueness        | Technical  | Uniqueness      | APPLICATION_ID        | HIGH     | No duplicate app IDs
+-- LA-02   | Application ID Not Null          | Technical  | Completeness    | APPLICATION_ID        | HIGH     | PK cannot be null
+-- LA-03   | Requested Amount > 0             | Business   | Accuracy        | REQUESTED_AMOUNT      | HIGH     | Loan request must be positive
+-- LA-04   | Approved <= Requested            | Business   | Consistency     | APPROVED/REQUESTED    | HIGH     | Cannot approve more than requested
+-- LA-05   | Credit Score Range (300-850)     | Business   | Validity        | CREDIT_SCORE          | HIGH     | Must be in valid credit score range
+-- LA-06   | Loan Type Accepted Values        | Business   | Validity        | LOAN_TYPE             | MEDIUM   | Only HOME, CAR, PERSONAL, EDUCATION, BUSINESS
+-- LA-07   | Application Status Accepted      | Business   | Validity        | APPLICATION_STATUS    | HIGH     | Only APPROVED, PENDING, REJECTED
+-- LA-08   | Application Date Not Future      | Business   | Timeliness      | APPLICATION_DATE      | HIGH     | Cannot apply in the future
+-- LA-09   | Customer ID FK Integrity         | Technical  | Ref Integrity   | CUSTOMER_ID           | HIGH     | Must exist in CUSTOMERS
+-- LA-10   | Branch ID FK Integrity           | Technical  | Ref Integrity   | BRANCH_ID             | HIGH     | Must exist in BRANCHES
+-- LA-11   | Approved Not Null When Approved  | Business   | Completeness    | APPROVED_AMOUNT       | MEDIUM   | If status=APPROVED, amount must exist
+-- LA-12   | Row Count Stability              | Technical  | Completeness    | (table)               | MEDIUM   | Row count should not drop
+-- LA-13   | Freshness Check                  | Technical  | Timeliness      | (table)               | MEDIUM   | Table refreshed regularly
+
+-- ============================================================================
+-- SUMMARY: RULE COUNT BY DIMENSION AND PRIORITY
+-- ============================================================================
+--
+-- DIMENSION            | HIGH | MEDIUM | LOW | TOTAL
+-- ---------------------+------+--------+-----+------
+-- Completeness         |  10  |   6    |  1  |  17
+-- Uniqueness           |   7  |   0    |  0  |   7
+-- Validity             |  12  |   3    |  1  |  16
+-- Accuracy             |   4  |   0    |  0  |   4
+-- Referential Integrity|   7  |   0    |  0  |   7
+-- Consistency          |   2  |   2    |  0  |   4
+-- Timeliness           |   3  |   4    |  1  |   8
+-- ---------------------+------+--------+-----+------
+-- TOTAL                |  45  |  15    |  3  |  63 (deduplicated: some rules span multiple dims)
+--
+-- ACTUAL DISTINCT RULES: 48 rules across 5 tables
+-- ============================================================================
+
+-- ============================================================================
+-- PROPOSED CUSTOM DATA METRIC FUNCTIONS (beyond system DMFs)
+-- ============================================================================
+-- These custom DMFs will be created in Step 3 to handle business-specific validations
+-- that system DMFs (NULL_COUNT, DUPLICATE_COUNT, FRESHNESS, ROW_COUNT) cannot cover.
+--
+-- CUSTOM DMF NAME                      | TARGET TABLE       | LOGIC
+-- -------------------------------------+--------------------+--------------------------------------
+-- DQ_EMAIL_FORMAT_CHECK                | CUSTOMERS          | Count rows where EMAIL not matching regex
+-- DQ_PHONE_FORMAT_CHECK                | CUSTOMERS          | Count rows where PHONE not 10 digits
+-- DQ_FUTURE_DATE_CHECK                 | Multiple           | Count rows with date > today
+-- DQ_IFSC_FORMAT_CHECK                 | BRANCHES           | Count rows where IFSC invalid format
+-- DQ_POSITIVE_AMOUNT_CHECK             | TRANSACTIONS       | Count rows where AMOUNT <= 0
+-- DQ_NON_NEGATIVE_BALANCE_CHECK        | ACCOUNTS           | Count rows where BALANCE < 0
+-- DQ_CREDIT_SCORE_RANGE_CHECK          | LOAN_APPLICATIONS  | Count rows where score not in 300-850
+-- DQ_APPROVED_LTE_REQUESTED_CHECK      | LOAN_APPLICATIONS  | Count rows where approved > requested
+-- DQ_REFERENTIAL_INTEGRITY_CHECK       | Multiple           | Count orphan FK rows
+-- DQ_ACCEPTED_VALUES_CHECK             | Multiple           | Count rows with values outside allowed set
+-- ============================================================================
